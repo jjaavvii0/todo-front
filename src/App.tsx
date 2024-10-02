@@ -1,14 +1,15 @@
-import './App.css'
-import { TodoTable } from './components/TodoTable'
+import "./App.css";
+import { TodoTable } from "./components/TodoTable";
+import { Typography } from "antd";
+const { Title } = Typography;
 
 function App() {
-
-  return (
-    <>
-      <h1>Technical Test</h1>
-      <TodoTable></TodoTable>
-    </>
-  )
+    return (
+        <>
+            <Title>TECHNICAL TEST </Title>
+            <TodoTable></TodoTable>
+        </>
+    );
 }
 
-export default App
+export default App;
