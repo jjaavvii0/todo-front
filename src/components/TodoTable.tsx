@@ -31,7 +31,7 @@ const columns: TableProps<DataType>["columns"] = [
         title: "Status",
         key: "status",
         dataIndex: "status",
-        render: (value) => value? "OK" : "KO"
+        render: (value) => (value ? "OK" : "KO"),
         // render: (_, { tags }) => (
         //     <>
         //         {tags.map((tag) => {
