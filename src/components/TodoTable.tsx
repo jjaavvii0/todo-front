@@ -50,6 +50,7 @@ export function TodoTable() {
     }, [data]);
 
     const columns: TableProps<DataType>["columns"] = [
+        //TODO: Use ID as Key, new column with index
         {
             title: "ID",
             dataIndex: "id",
@@ -145,9 +146,10 @@ export function TodoTable() {
         {
             title: "Actions",
             key: "actions",
-            render: () => (
+            render: (value, record) => (
                 <Space size="middle">
                     <Button
+                        onClick={()=>handleDelete(record.id)}
                         className="custom-alert"
                         shape="circle"
                         icon={<DeleteOutlined />}
@@ -182,6 +184,13 @@ export function TodoTable() {
         });
     };
 
+    const handleDelete = (id: number) => {
+        setData((prevData) =>
+            prevData.filter((item) =>
+                item.id !== id
+            )
+        );        
+    }
     const handleDataToStore = () => {
         setDataToStore(!dataToStore)
         console.log("Sending to server"); //TODO: REQUEST
