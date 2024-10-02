@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Input, Space, Table } from "antd";
+import { Alert, Button, Form, Input, Space, Table, message } from "antd";
 import type { TableProps } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -15,6 +15,14 @@ interface EditingState {
     data: Partial<DataType>;
 }
 export function TodoTable() {
+    const defaultFooter = () => (
+        <Button
+            type="dashed"
+            onClick={handleAddNewRow}
+        >
+            Add new row
+        </Button>
+    );
     const [data, setData] = useState<DataType[]>([
         {
             id: 1,
@@ -42,6 +50,7 @@ export function TodoTable() {
     const [dataToStore, setDataToStore] = useState(false);
     const dataReference = useRef<DataType[]>(data);
 
+    const [form] = Form.useForm();
     const isEqual = (obj1: object, obj2: object): boolean => {
         return JSON.stringify(obj1) === JSON.stringify(obj2);
     };
@@ -52,10 +61,15 @@ export function TodoTable() {
     const columns: TableProps<DataType>["columns"] = [
         //TODO: Use ID as Key, new column with index
         {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
+            title: "Index",
+            key: "index",
+            render: (_, __, index) => index + 1,
         },
+        // {
+        //     title: "ID",
+        //     dataIndex: "id",
+        //     key: "id",
+        // },
         {
             title: "Name",
             dataIndex: "name",
@@ -64,24 +78,32 @@ export function TodoTable() {
                 editing.row !== null &&
                 record.id === editing.row &&
                 editing.column === "name" ? (
-                    <Input
-                        autoFocus
-                        onChange={(e) =>
-                            setEditing({
-                                ...editing,
-                                data: {
-                                    ...editing.data,
-                                    name: e.target.value,
-                                },
-                            })
-                        }
-                        value={
-                            editing.data.name !== undefined
-                                ? editing.data.name
-                                : value
-                        }
-                        onBlur={() => handleSaveNewData(record.id)}
-                    ></Input>
+                    <Form.Item
+                        name={`name_${record.id}`}
+                        initialValue={value}
+                        rules={[
+                            { required: true, message: "Please input a name!" },
+                        ]}
+                    >
+                        <Input
+                            autoFocus
+                            onChange={(e) =>
+                                setEditing({
+                                    ...editing,
+                                    data: {
+                                        ...editing.data,
+                                        name: e.target.value,
+                                    },
+                                })
+                            }
+                            value={
+                                editing.data.name !== undefined
+                                    ? editing.data.name
+                                    : value
+                            }
+                            onBlur={() => handleSaveNewData(record.id)}
+                        ></Input>
+                    </Form.Item>
                 ) : (
                     <span
                         onDoubleClick={() =>
@@ -101,24 +123,36 @@ export function TodoTable() {
                 editing.row !== null &&
                 record.id === editing.row &&
                 editing.column === "description" ? (
-                    <Input
-                        autoFocus
-                        onChange={(e) =>
-                            setEditing({
-                                ...editing,
-                                data: {
-                                    ...editing.data,
-                                    description: e.target.value,
-                                },
-                            })
-                        }
-                        value={
-                            editing.data.description !== undefined
-                                ? editing.data.description
-                                : value
-                        }
-                        onBlur={() => handleSaveNewData(record.id)}
-                    ></Input>
+                    <Form.Item
+                        name={`description_${record.id}`}
+                        initialValue={value}
+                        rules={[
+                            {
+                                min: 5,
+                                message:
+                                    "Description must be at least 5 characters long!",
+                            },
+                        ]}
+                    >
+                        <Input
+                            autoFocus
+                            onChange={(e) =>
+                                setEditing({
+                                    ...editing,
+                                    data: {
+                                        ...editing.data,
+                                        description: e.target.value,
+                                    },
+                                })
+                            }
+                            value={
+                                editing.data.description !== undefined
+                                    ? editing.data.description
+                                    : value
+                            }
+                            onBlur={() => handleSaveNewData(record.id)}
+                        ></Input>
+                    </Form.Item>
                 ) : (
                     <span
                         style={{ color: value ? "inherit" : "grey" }}
@@ -149,7 +183,7 @@ export function TodoTable() {
             render: (value, record) => (
                 <Space size="middle">
                     <Button
-                        onClick={()=>handleDelete(record.id)}
+                        onClick={() => handleDelete(record.id)}
                         className="custom-alert"
                         shape="circle"
                         icon={<DeleteOutlined />}
@@ -172,37 +206,52 @@ export function TodoTable() {
     };
 
     const handleSaveNewData = (id: number) => {
-        setData((prevData) =>
-            prevData.map((item) =>
-                item.id !== id ? item : { ...item, ...editing.data }
-            )
-        );
-        setEditing({
-            row: null,
-            column: "",
-            data: {},
-        });
+        form.validateFields()
+            .then((values) => {
+                setData((prevData) =>
+                    prevData.map((item) =>
+                        item.id !== id ? item : { ...item, ...editing.data }
+                    )
+                );
+                setEditing({
+                    row: null,
+                    column: "",
+                    data: {},
+                });
+            })
+            .catch(() => {
+                message.error("Please fix the errors before saving.");
+            });
     };
 
     const handleDelete = (id: number) => {
-        setData((prevData) =>
-            prevData.filter((item) =>
-                item.id !== id
-            )
-        );        
-    }
+        setData((prevData) => prevData.filter((item) => item.id !== id));
+    };
+    const handleAddNewRow = () => {
+        setData((prevData) => [
+            ...prevData,
+            {
+                id: Math.random(),
+                name: "name",
+                status: false,
+            },
+        ]);
+    };
     const handleDataToStore = () => {
-        setDataToStore(!dataToStore)
+        setDataToStore(!dataToStore);
         console.log("Sending to server"); //TODO: REQUEST
-        dataReference.current = data
-    }
+        dataReference.current = data;
+    };
 
     return (
         <>
-            <Table<DataType>
-                columns={columns}
-                dataSource={data}
-            />
+            <Form form={form}>
+                <Table<DataType>
+                    {...{ footer: defaultFooter }}
+                    columns={columns}
+                    dataSource={data.map((item) => ({ ...item, key: item.id }))}
+                />
+            </Form>
             <Button
                 type="primary"
                 disabled={dataToStore}
