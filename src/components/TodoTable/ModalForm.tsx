@@ -4,7 +4,7 @@ import { DataType } from "../../types/types";
 interface ModalProps {
     isFormModalOpen: boolean;
     handleSubmitModal: () => void;
-    setIsFormModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    handleCancelModal: () => void;
     setDataFormModal: React.Dispatch<React.SetStateAction<Partial<DataType>>>;
     dataFormModal: Partial<DataType>;
     form: FormInstance;
@@ -12,7 +12,7 @@ interface ModalProps {
 export const ModalForm = ({
     isFormModalOpen,
     handleSubmitModal,
-    setIsFormModalOpen,
+    handleCancelModal,
     setDataFormModal,
     dataFormModal,
     form,
@@ -24,7 +24,7 @@ export const ModalForm = ({
                 centered
                 open={isFormModalOpen}
                 onOk={handleSubmitModal}
-                onCancel={() => setIsFormModalOpen(false)}
+                onCancel={handleCancelModal}
             >
                 <Form form={form}>
                     <Form.Item

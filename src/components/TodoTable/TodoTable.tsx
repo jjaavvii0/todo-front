@@ -46,6 +46,7 @@ export function TodoTable() {
         isFormModalOpen,
         setIsFormModalOpen,
         handleSubmitModal,
+        handleCancelModal
     } = useTableData(initialData);
 
     const columns: TableProps<DataType>["columns"] = [
@@ -183,10 +184,10 @@ export function TodoTable() {
             <ModalForm
                 isFormModalOpen={isFormModalOpen}
                 handleSubmitModal={handleSubmitModal}
-                setIsFormModalOpen={setIsFormModalOpen}
                 setDataFormModal={setDataFormModal}
                 dataFormModal={dataFormModal}
                 form={form}
+                handleCancelModal={handleCancelModal}
             />
             <Form form={form}>
                 <Table<DataType>

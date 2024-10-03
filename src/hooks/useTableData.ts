@@ -67,6 +67,14 @@ export function useTableData(initialData: DataType[]) {
         setDataFormModal({});
         form.resetFields();
     };
+
+    //MODAL FUNCTIONS
+    const handleCancelModal=()=> {
+        setIsFormModalOpen(false);
+        form.resetFields();
+    }
+    
+    () => setIsFormModalOpen(false)
     const handleSubmitModal = () => {
         //TODO: REQUEST
         form.validateFields()
@@ -106,5 +114,6 @@ export function useTableData(initialData: DataType[]) {
         isFormModalOpen,
         setIsFormModalOpen,
         handleSubmitModal,
+        handleCancelModal
     };
 }
