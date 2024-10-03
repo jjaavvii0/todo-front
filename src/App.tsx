@@ -1,6 +1,6 @@
 import { Header } from "antd/es/layout/layout";
 import "./App.css";
-import { TodoTable } from "./components/TodoTable";
+import { TodoTable } from "./components/TodoTable/TodoTable";
 import { Layout, Typography } from "antd";
 const { Title } = Typography;
 

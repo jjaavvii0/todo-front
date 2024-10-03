@@ -1,8 +1,9 @@
 import { Alert, Button, Form, Input, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
-import { useTableData } from "../hooks/useTableData";
-import { DataType } from "../types/types";
+import { useTableData } from "../../hooks/useTableData";
+import { DataType } from "../../types/types";
+import { ModalForm } from "./ModalForm";
 
 export function TodoTable() {
     const initialData: DataType[] = [
@@ -23,11 +24,12 @@ export function TodoTable() {
     const defaultFooter = () => (
         <Button
             type="dashed"
-            onClick={handleAddNewRow}
+            onClick={() => setIsFormModalOpen((prev) => !prev)}
         >
             Add new row
         </Button>
     );
+
     const {
         data,
         editing,
@@ -36,10 +38,14 @@ export function TodoTable() {
         handleEditingCell,
         handleSaveNewData,
         handleDeleteRow,
-        handleAddNewRow,
         handleDataToStore,
         setEditing,
         form,
+        dataFormModal,
+        setDataFormModal,
+        isFormModalOpen,
+        setIsFormModalOpen,
+        handleSubmitModal,
     } = useTableData(initialData);
 
     const columns: TableProps<DataType>["columns"] = [
@@ -174,6 +180,14 @@ export function TodoTable() {
 
     return (
         <>
+            <ModalForm
+                isFormModalOpen={isFormModalOpen}
+                handleSubmitModal={handleSubmitModal}
+                setIsFormModalOpen={setIsFormModalOpen}
+                setDataFormModal={setDataFormModal}
+                dataFormModal={dataFormModal}
+                form={form}
+            />
             <Form form={form}>
                 <Table<DataType>
                     {...{ footer: defaultFooter }}
