@@ -1,29 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { Alert, Button, Form, Input, Space, Table, message } from "antd";
+import { Alert, Button, Form, Input, Space, Table } from "antd";
 import type { TableProps } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { useTableData } from "../hooks/useTableData";
+import { DataType } from "../types/types";
 
-interface DataType {
-    id: number;
-    name: string;
-    description?: string;
-    status: boolean;
-}
-interface EditingState {
-    row: number | null;
-    column: string; // TODO: Do with ENUM
-    data: Partial<DataType>;
-}
 export function TodoTable() {
-    const defaultFooter = () => (
-        <Button
-            type="dashed"
-            onClick={handleAddNewRow}
-        >
-            Add new row
-        </Button>
-    );
-    const [data, setData] = useState<DataType[]>([
+    const initialData: DataType[] = [
         {
             id: 1,
             name: "Do the technical test",
@@ -36,27 +18,29 @@ export function TodoTable() {
             description: "All the T-shirts",
             status: false,
         },
-        {
-            id: 3,
-            name: "Clean the living room",
-            status: false,
-        },
-    ]);
-    const [editing, setEditing] = useState<EditingState>({
-        row: null,
-        column: "",
-        data: {},
-    });
-    const [dataToStore, setDataToStore] = useState(false);
-    const dataReference = useRef<DataType[]>(data);
-
-    const [form] = Form.useForm();
-    const isEqual = (obj1: object, obj2: object): boolean => {
-        return JSON.stringify(obj1) === JSON.stringify(obj2);
-    };
-    useEffect(() => {
-        setDataToStore(isEqual(dataReference.current, data));
-    }, [data]);
+        { id: 3, name: "Clean the living room", status: false },
+    ];
+    const defaultFooter = () => (
+        <Button
+            type="dashed"
+            onClick={handleAddNewRow}
+        >
+            Add new row
+        </Button>
+    );
+    const {
+        data,
+        editing,
+        isDataPending,
+        toggleStatus,
+        handleEditingCell,
+        handleSaveNewData,
+        handleDeleteRow,
+        handleAddNewRow,
+        handleDataToStore,
+        setEditing,
+        form,
+    } = useTableData(initialData);
 
     const columns: TableProps<DataType>["columns"] = [
         //TODO: Use ID as Key, new column with index
@@ -65,11 +49,6 @@ export function TodoTable() {
             key: "index",
             render: (_, __, index) => index + 1,
         },
-        // {
-        //     title: "ID",
-        //     dataIndex: "id",
-        //     key: "id",
-        // },
         {
             title: "Name",
             dataIndex: "name",
@@ -183,7 +162,7 @@ export function TodoTable() {
             render: (value, record) => (
                 <Space size="middle">
                     <Button
-                        onClick={() => handleDelete(record.id)}
+                        onClick={() => handleDeleteRow(record.id)}
                         className="custom-alert"
                         shape="circle"
                         icon={<DeleteOutlined />}
@@ -192,56 +171,6 @@ export function TodoTable() {
             ),
         },
     ];
-
-    const toggleStatus = (id: number) => {
-        setData((prevData) =>
-            prevData.map((item) =>
-                item.id === id ? { ...item, status: !item.status } : item
-            )
-        );
-    };
-
-    const handleEditingCell = (id: number, column: string) => {
-        setEditing({ ...editing, column: column, row: id });
-    };
-
-    const handleSaveNewData = (id: number) => {
-        form.validateFields()
-            .then((values) => {
-                setData((prevData) =>
-                    prevData.map((item) =>
-                        item.id !== id ? item : { ...item, ...editing.data }
-                    )
-                );
-                setEditing({
-                    row: null,
-                    column: "",
-                    data: {},
-                });
-            })
-            .catch(() => {
-                message.error("Please fix the errors before saving.");
-            });
-    };
-
-    const handleDelete = (id: number) => {
-        setData((prevData) => prevData.filter((item) => item.id !== id));
-    };
-    const handleAddNewRow = () => {
-        setData((prevData) => [
-            ...prevData,
-            {
-                id: Math.random(),
-                name: "name",
-                status: false,
-            },
-        ]);
-    };
-    const handleDataToStore = () => {
-        setDataToStore(!dataToStore);
-        console.log("Sending to server"); //TODO: REQUEST
-        dataReference.current = data;
-    };
 
     return (
         <>
@@ -254,7 +183,7 @@ export function TodoTable() {
             </Form>
             <Button
                 type="primary"
-                disabled={dataToStore}
+                disabled={isDataPending}
                 onClick={handleDataToStore}
             >
                 Store new data
