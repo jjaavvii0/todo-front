@@ -151,7 +151,7 @@ export function TodoTable() {
         {
             title: "Actions",
             key: "actions",
-            render: (value, record) => (
+            render: (_, record) => (
                 <Space size="middle">
                     <Tooltip title="Store row">
                         <Button

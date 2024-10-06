@@ -152,7 +152,7 @@ export function useTableData() {
         try {
             const values = await form.validateFields();
             const newRow = { ...values, status: false };
-            const { data } = await postDuty(newRow);
+            const data = await postDuty(newRow);
             handleAddNewRow({ ...newRow, id: data.id });
             message.success("Row added");
 
