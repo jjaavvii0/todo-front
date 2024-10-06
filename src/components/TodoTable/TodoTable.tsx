@@ -1,26 +1,11 @@
-import { Alert, Button, Form, Input, Space, Table } from "antd";
+import { Alert, Button, Form, Input, Space, Table, Tooltip } from "antd";
 import type { TableProps } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import { useTableData } from "../../hooks/useTableData";
+import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
+import { useTableData } from "../../hooks/useTodoTable";
 import { DataType } from "../../types/types";
 import { ModalForm } from "./ModalForm";
 
 export function TodoTable() {
-    const initialData: DataType[] = [
-        {
-            id: 1,
-            name: "Do the technical test",
-            description: "Area55",
-            status: false,
-        },
-        {
-            id: 2,
-            name: "Do the laundry",
-            description: "All the T-shirts",
-            status: false,
-        },
-        { id: 3, name: "Clean the living room", status: false },
-    ];
     const defaultFooter = () => (
         <Button
             type="dashed"
@@ -33,12 +18,10 @@ export function TodoTable() {
     const {
         data,
         editing,
-        isDataPending,
         toggleStatus,
         handleEditingCell,
         handleSaveNewData,
         handleDeleteRow,
-        handleDataToStore,
         setEditing,
         form,
         dataFormModal,
@@ -46,8 +29,10 @@ export function TodoTable() {
         isFormModalOpen,
         setIsFormModalOpen,
         handleSubmitModal,
-        handleCancelModal
-    } = useTableData(initialData);
+        handleCancelModal,
+        handleUpdateRow,
+        checkIfRowModified,
+    } = useTableData();
 
     const columns: TableProps<DataType>["columns"] = [
         //TODO: Use ID as Key, new column with index
@@ -168,12 +153,22 @@ export function TodoTable() {
             key: "actions",
             render: (value, record) => (
                 <Space size="middle">
-                    <Button
-                        onClick={() => handleDeleteRow(record.id)}
-                        className="custom-alert"
-                        shape="circle"
-                        icon={<DeleteOutlined />}
-                    />
+                    <Tooltip title="Store row">
+                        <Button
+                            onClick={() => handleUpdateRow(record)}
+                            className="custom-alert"
+                            disabled={checkIfRowModified(record.id)}
+                            icon={<SaveOutlined />}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Delete row">
+                        <Button
+                            onClick={() => handleDeleteRow(record.id)}
+                            className="custom-alert"
+                            style={{ marginRight: "8px" }}
+                            icon={<DeleteOutlined />}
+                        />
+                    </Tooltip>
                 </Space>
             ),
         },
@@ -196,13 +191,6 @@ export function TodoTable() {
                     dataSource={data.map((item) => ({ ...item, key: item.id }))}
                 />
             </Form>
-            <Button
-                type="primary"
-                disabled={isDataPending}
-                onClick={handleDataToStore}
-            >
-                Store new data
-            </Button>
         </>
     );
 }
