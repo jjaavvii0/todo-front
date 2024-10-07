@@ -1,50 +1,17 @@
-# React + TypeScript + Vite
+## TODO Project
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Follow these steps to install and run the project locally:
 
-Currently, two official plugins are available:
+1. Clone the repository ----> git clone https://github.com/jjaavvii0/todo-front
+2. Navigate to the project directory ----> cd todo-front
+3. Install the dependencies ----> npm install
+4. Run the project ----> npm run dev
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Features:
+- New rows can be added by clicking the "Add new row" button. This action will open a modal where you need to fill out the fields and then click "OK" to submit.
 
-## Expanding the ESLint configuration
+- If there are more than 10 rows, a new page will be created, and you can navigate between pages using the buttons located at the bottom right.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- The status can be changed by clicking on the "DONE" or "PENDING" label. To modify the "Name" or "Description," you need to double-click on the cell you want to edit. Any changes you make will be lost unless you send them to the server using the first button in the "Actions" column. This button becomes enabled when there are unsaved changes.
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- You can also delete rows by using the delete button (the second one) in the "Actions" column.
